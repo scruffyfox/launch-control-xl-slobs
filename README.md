@@ -1,5 +1,7 @@
 # Readme
 
+![Launch control XL](launchcontrol.jpg)
+
 Launch control XL Streamlabs OBS controller.
 
 This is a basic vanilla JS project to link a midi controller with Streamlabs OBS to control various parameters.

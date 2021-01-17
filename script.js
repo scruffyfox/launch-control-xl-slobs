@@ -305,8 +305,8 @@ const midiApp = {
 						}
 						else if (cmd === Commands.NOTE_ON)
 						{
+							//that.clearChoke(that.macroMap[button])
 							if (that.macroMap[button].toggle) that.handleToggle(that.macroMap[button])
-							that.clearChoke(that.macroMap[button])
 							that.macroMap[button].callback()
 							handled = true
 							break
@@ -336,6 +336,7 @@ const midiApp = {
 	
 	handleToggle: function(button) {
 		button.toggled = !button.toggled
+		this.clearChoke(button)
 		if (button.toggled) this.sendCommand(Commands.NOTE_ON, button.note, button.colour[1])
 		else this.sendCommand(Commands.NOTE_ON, button.note, button.colour[0])
 	},
@@ -366,10 +367,12 @@ const midiApp = {
 	},
 	
 	clearChoke: function(b) {
+		if (!b.choke) return
 		for (button in this.macroMap)
 		{
-			if (this.macroMap[button].choke == b.choke) 
+			if (this.macroMap[button].choke == b.choke)
 			{
+				this.macroMap[button].toggled = false
 				this.sendCommand(Commands.NOTE_ON, this.macroMap[button].note, this.macroMap[button].colour[0])
 			}
 		}
@@ -444,6 +447,17 @@ function initMacros()
 			callback: function(velocity) {
 				var vel = Math.floor((velocity / 127) * 100) / 100
 				obsApp.setVolume(this.id.sourceId, vel)
+			}
+		}
+		
+		midiApp.macroMap["desktop_audio"] = {
+			id: desktop,
+			note: matrix[6][1],
+			toggle: true,
+			toggled: desktop.muted === true,
+			colour: Colours.ORANGE,
+			callback: function() {
+				obsApp.setMuted(this.id.sourceId, this.toggled)			
 			}
 		}
 	}
